@@ -21,7 +21,7 @@
 //     }
 // })
 
-const express = require("express");
+// const express = require("express");
 
 // const http = require('http');
 // const server = http.createServer(function(req,res){
@@ -60,5 +60,28 @@ const express = require("express");
 
 ///////////////////////
 //Form handling 
+// app.use(express.json());
+// app.use(express.urlencoded({extended:true}));
+// const morgan = require('morgan');
+// app.use(morgan('dev'))
+
+
+const express = require('express');
+const app = express()
+
+app.set("view engine",'ejs')
+
+const morgan = require('morgan');
+app.use(morgan('dev'))
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+
+app.get("/",function(req,res,next){
+    res.render('index')
+})
+app.post("/get-form-data",(req,res)=>{
+    console.log(req.body)
+    res.send("data received to server")
+})
+app.listen(3000)
