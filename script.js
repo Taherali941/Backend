@@ -66,22 +66,72 @@
 // app.use(morgan('dev'))
 
 
+// const express = require('express');
+// const app = express()
+
+// app.set("view engine",'ejs')
+
+// const morgan = require('morgan');
+// app.use(morgan('dev'))
+
+// app.use(express.json());
+// app.use(express.urlencoded({extended:true}));
+
+// app.get("/",function(req,res,next){
+//     res.render('index')
+// })
+// app.post("/get-form-data",(req,res)=>{
+//     console.log(req.body)
+//     res.send("data received to server")
+// })
+// app.listen(3000)
+
+
+
+///////////////////////////////////////////
+
 const express = require('express');
-const app = express()
+const app = express();
 
-app.set("view engine",'ejs')
-
-const morgan = require('morgan');
-app.use(morgan('dev'))
-
+//middleware built in to read json
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
 
-app.get("/",function(req,res,next){
-    res.render('index')
-})
-app.post("/get-form-data",(req,res)=>{
+let users = [];
+let userId = 1;
+app.post('/users',(req,res)=>{
+    console.log("post /users called")
     console.log(req.body)
-    res.send("data received to server")
+    const {name ,email} = req.body;
+
+    if(!name || !email){
+        return res.status(400).json({message:"name and email are required"});
+    }
+
+    const newUser ={
+        id:userId++,
+        name,
+        email
+    };
+
+    users.push(newUser);
+    res.status(201).json(newUser)
+
+})
+
+
+app.get("/users",(req,res)=>{
+    res.json(users)
+})
+
+
+app.get("/users/:id",(req,res)=>{
+    const id = Number(req.params.id);
+    console.log(id)
+    const user = users.find(u=> u.id ===id);
+    if(!user){
+        return res.status(404).json({message:"user not found"});
+    }
+
+    res.json(user);
 })
 app.listen(3000)
