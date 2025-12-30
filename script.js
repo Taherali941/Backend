@@ -98,32 +98,27 @@ app.use(express.json());
 
 let users = [];
 let userId = 1;
+/////create a user
 app.post('/users',(req,res)=>{
     console.log("post /users called")
     console.log(req.body)
     const {name ,email} = req.body;
-
     if(!name || !email){
         return res.status(400).json({message:"name and email are required"});
     }
-
     const newUser ={
         id:userId++,
         name,
         email
     };
-
     users.push(newUser);
     res.status(201).json(newUser)
-
 })
-
-
+////get alll user in route
 app.get("/users",(req,res)=>{
     res.json(users)
 })
-
-
+////get user by id
 app.get("/users/:id",(req,res)=>{
     const id = Number(req.params.id);
     console.log(id)
@@ -131,7 +126,32 @@ app.get("/users/:id",(req,res)=>{
     if(!user){
         return res.status(404).json({message:"user not found"});
     }
-
     res.json(user);
+})
+//// delete user
+app.delete("/users/:id",(req,res)=>{
+    console.log("delete /users called")
+    const id = Number(req.params.id);
+    const index = users.findIndex(u=> u.id === id);
+    if (index === -1) {
+        return res.status(404).json({message:"user not found"})
+    }
+    users.splice(index ,1)
+    res.json({message:"user deleted succesfully"})
+})
+
+/// update user
+app.put("/users/:id",(req,res)=>{
+    console.log("put route hit")
+    const id = Number(req.params.id)
+    const {name , email} = req.body;
+    const index = users.findIndex(u=>u.id === id);
+    if(index ==-1){
+        return res.status(404).json({message:"user not found"})
+    }
+    //update if only value is provided
+    if (name) users[index].name = name;
+    if (email) users[index].email = email;
+    res.json({message:"user updated successfully",user: users[index]})
 })
 app.listen(3000)
