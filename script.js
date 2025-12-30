@@ -119,14 +119,28 @@ app.get("/users",(req,res)=>{
     res.json(users)
 })
 ////get user by id
-app.get("/users/:id",(req,res)=>{
-    const id = Number(req.params.id);
-    console.log(id)
-    const user = users.find(u=> u.id ===id);
-    if(!user){
+// app.get("/users/:id",(req,res)=>{
+//     const id = Number(req.params.id);
+//     console.log(id)
+//     const user = users.find(u=> u.id ===id);
+//     if(!user){
+//         return res.status(404).json({message:"user not found"});
+//     }
+//     res.json(user);
+// })
+
+/////////search user with name query
+app.get("/users/search",(req,res)=>{
+    console.log("search hit")
+    const {name} = req.query;
+    if(!name){
+        return res.json(users);
+    }
+    const filteresUsers = users.filter(user=>user.name.toLowerCase().includes(name.toLowerCase()))
+    if(filteresUsers.length === 0){
         return res.status(404).json({message:"user not found"});
     }
-    res.json(user);
+    res.json(filteresUsers)
 })
 //// delete user
 app.delete("/users/:id",(req,res)=>{
@@ -154,4 +168,6 @@ app.put("/users/:id",(req,res)=>{
     if (email) users[index].email = email;
     res.json({message:"user updated successfully",user: users[index]})
 })
+
+
 app.listen(3000)
